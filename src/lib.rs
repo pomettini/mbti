@@ -1,3 +1,5 @@
+#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
+
 extern crate strum;
 extern crate tuple;
 #[macro_use]
@@ -7,7 +9,6 @@ extern crate maplit;
 
 use std::collections::HashSet;
 use strum::IntoEnumIterator;
-use tuple::*;
 
 static COMPATIBILITY_CHART: [[Compatibility; 16]; 16] = [
     // INFP
@@ -316,7 +317,6 @@ static COMPATIBILITY_CHART: [[Compatibility; 16]; 16] = [
     ],
 ];
 
-#[allow(dead_code)]
 static FUNCTIONS: [[Function; 4]; 16] = [
     [Function::Fi, Function::Ne, Function::Si, Function::Te], // INFP
     [Function::Ne, Function::Fi, Function::Te, Function::Si], // ENFP
@@ -335,8 +335,6 @@ static FUNCTIONS: [[Function; 4]; 16] = [
     [Function::Si, Function::Te, Function::Fi, Function::Ne], // ISTJ
     [Function::Te, Function::Si, Function::Ne, Function::Fi], // ESTJ
 ];
-
-type FunctionsGroup = (Function, Function, Function, Function);
 
 #[derive(EnumIter, Debug, PartialEq, PartialOrd, Copy, Clone, Hash, Eq)]
 pub enum Type {
@@ -358,7 +356,31 @@ pub enum Type {
     ESTJ,
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Clone)]
+impl Type {
+    fn at_index(index: usize) -> Option<Self> {
+        match index {
+            0 => Some(Type::INFP),
+            1 => Some(Type::ENFP),
+            2 => Some(Type::INFJ),
+            3 => Some(Type::ENFJ),
+            4 => Some(Type::INTJ),
+            5 => Some(Type::ENTJ),
+            6 => Some(Type::INTP),
+            7 => Some(Type::ENTP),
+            8 => Some(Type::ISFP),
+            9 => Some(Type::ESFP),
+            10 => Some(Type::ISTP),
+            11 => Some(Type::ESTP),
+            12 => Some(Type::ISFJ),
+            13 => Some(Type::ESFJ),
+            14 => Some(Type::ISTJ),
+            15 => Some(Type::ESTJ),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub enum Function {
     Te,
     Ti,
@@ -380,71 +402,42 @@ pub enum Role {
 
 #[derive(EnumIter, Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub enum Compatibility {
-    VeryPositive = 2,
-    Positive = 1,
-    Neutral = 0,
-    Negative = -1,
-    VeryNegative = -2,
+    VeryPositive,
+    Positive,
+    Neutral,
+    Negative,
+    VeryNegative,
 }
-
-pub struct TypeCompatibility {}
 
 pub fn get_function(type_: Type, role: Role) -> Function {
-    let functions = get_functions(type_);
-    functions.get(role as usize).unwrap().clone()
+    FUNCTIONS[type_ as usize][role as usize]
 }
 
-pub fn get_functions(type_: Type) -> FunctionsGroup {
-    match type_ {
-        // TODO: Needs refactor
-        Type::ISTJ => (Function::Si, Function::Te, Function::Fi, Function::Ne),
-        Type::ISFJ => (Function::Si, Function::Fe, Function::Ti, Function::Ne),
-        Type::INFJ => (Function::Ni, Function::Fe, Function::Ti, Function::Se),
-        Type::INTJ => (Function::Ni, Function::Te, Function::Fi, Function::Se),
-        Type::ISTP => (Function::Ti, Function::Se, Function::Ni, Function::Fe),
-        Type::ISFP => (Function::Fi, Function::Se, Function::Ni, Function::Te),
-        Type::INFP => (Function::Fi, Function::Ne, Function::Si, Function::Te),
-        Type::INTP => (Function::Ti, Function::Ne, Function::Si, Function::Fe),
-        Type::ESTP => (Function::Se, Function::Ti, Function::Fe, Function::Ni),
-        Type::ESFP => (Function::Se, Function::Fi, Function::Te, Function::Ni),
-        Type::ENFP => (Function::Ne, Function::Fi, Function::Te, Function::Si),
-        Type::ENTP => (Function::Ne, Function::Ti, Function::Fe, Function::Si),
-        Type::ESTJ => (Function::Te, Function::Si, Function::Ne, Function::Fi),
-        Type::ESFJ => (Function::Fe, Function::Si, Function::Ne, Function::Ti),
-        Type::ENFJ => (Function::Fe, Function::Ni, Function::Se, Function::Ti),
-        Type::ENTJ => (Function::Te, Function::Ni, Function::Se, Function::Fi),
+pub fn get_functions_from_type(type_: Type) -> Vec<Function> {
+    vec![
+        FUNCTIONS[type_ as usize][0],
+        FUNCTIONS[type_ as usize][1],
+        FUNCTIONS[type_ as usize][2],
+        FUNCTIONS[type_ as usize][3],
+    ]
+}
+
+pub fn get_type_from_functions(input: &[Function]) -> Option<Type> {
+    for (iterator, function) in FUNCTIONS.iter().enumerate() {
+        if input == function {
+            return Type::at_index(iterator);
+        }
     }
+
+    None
 }
 
-pub fn get_type(group: FunctionsGroup) -> Option<Type> {
-    match group {
-        // TODO: Needs refactor
-        (Function::Si, Function::Te, Function::Fi, Function::Ne) => Some(Type::ISTJ),
-        (Function::Si, Function::Fe, Function::Ti, Function::Ne) => Some(Type::ISFJ),
-        (Function::Ni, Function::Fe, Function::Ti, Function::Se) => Some(Type::INFJ),
-        (Function::Ni, Function::Te, Function::Fi, Function::Se) => Some(Type::INTJ),
-        (Function::Ti, Function::Se, Function::Ni, Function::Fe) => Some(Type::ISTP),
-        (Function::Fi, Function::Se, Function::Ni, Function::Te) => Some(Type::ISFP),
-        (Function::Fi, Function::Ne, Function::Si, Function::Te) => Some(Type::INFP),
-        (Function::Ti, Function::Ne, Function::Si, Function::Fe) => Some(Type::INTP),
-        (Function::Se, Function::Ti, Function::Fe, Function::Ni) => Some(Type::ESTP),
-        (Function::Se, Function::Fi, Function::Te, Function::Ni) => Some(Type::ESFP),
-        (Function::Ne, Function::Fi, Function::Te, Function::Si) => Some(Type::ENFP),
-        (Function::Ne, Function::Ti, Function::Fe, Function::Si) => Some(Type::ENTP),
-        (Function::Te, Function::Si, Function::Ne, Function::Fi) => Some(Type::ESTJ),
-        (Function::Fe, Function::Si, Function::Ne, Function::Ti) => Some(Type::ESFJ),
-        (Function::Fe, Function::Ni, Function::Se, Function::Ti) => Some(Type::ENFJ),
-        (Function::Te, Function::Ni, Function::Se, Function::Fi) => Some(Type::ENTJ),
-        _ => None,
-    }
-}
-
-pub fn get_types(function: Function, role: Role) -> HashSet<Type> {
+pub fn get_types_from_function_role(function: Function, role: Role) -> HashSet<Type> {
     let mut types: HashSet<Type> = HashSet::new();
 
-    // TODO: Refactor because extremely inefficent
+    // TODO: Refactor because inefficent
     for type_ in Type::iter() {
-        if get_functions(type_).get(role as usize).unwrap().clone() == function {
+        if get_functions_from_type(type_)[role as usize] == function {
             types.insert(type_);
         }
     }
@@ -453,120 +446,15 @@ pub fn get_types(function: Function, role: Role) -> HashSet<Type> {
 }
 
 pub fn get_compatibile_types(type_: Type, compatibility: Compatibility) -> HashSet<Type> {
-    match type_ {
-        Type::ISTJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ISFJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::INFJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::INTJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ISTP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ISFP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::INFP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::INTP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ESTP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ESFP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ENFP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ENTP => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ESTJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ESFJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ENFJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
-        Type::ENTJ => match compatibility {
-            Compatibility::VeryNegative => hashset![Type::INFP, Type::ENFP, Type::INFJ, Type::ENFJ],
-            Compatibility::Negative => hashset![Type::INTJ, Type::INTP, Type::ENTP],
-            Compatibility::Neutral => hashset![Type::ENTJ, Type::ISFP, Type::ISTP],
-            Compatibility::Positive => hashset![Type::ISFJ, Type::ESFJ, Type::ISTJ, Type::ESTJ],
-            Compatibility::VeryPositive => hashset![Type::ESFP, Type::ESTP],
-        },
+    let mut set: HashSet<Type> = HashSet::new();
+
+    for (iterator, types) in COMPATIBILITY_CHART[type_ as usize].iter().enumerate() {
+        if types == &compatibility {
+            set.insert(Type::at_index(iterator).unwrap());
+        }
     }
+
+    set
 }
 
 pub fn check_compatibility(first: Type, second: Type) -> Compatibility {
@@ -599,8 +487,8 @@ mod tests {
     #[test]
     fn test_get_functions_correct() {
         assert_eq!(
-            get_functions(Type::INTP),
-            (Function::Ti, Function::Ne, Function::Si, Function::Fe)
+            get_functions_from_type(Type::INTP),
+            vec![Function::Ti, Function::Ne, Function::Si, Function::Fe]
         );
     }
 
@@ -608,15 +496,15 @@ mod tests {
     #[should_panic]
     fn test_get_functions_wrong() {
         assert_eq!(
-            get_functions(Type::INTP),
-            (Function::Fe, Function::Si, Function::Ne, Function::Ti)
+            get_functions_from_type(Type::INTP),
+            vec![Function::Fe, Function::Si, Function::Ne, Function::Ti]
         );
     }
 
     #[test]
     fn test_get_types_from_primary() {
         assert_eq!(
-            get_types(Function::Fe, Role::Primary),
+            get_types_from_function_role(Function::Fe, Role::Primary),
             hashset![Type::ESFJ, Type::ENFJ]
         );
     }
@@ -624,7 +512,7 @@ mod tests {
     #[test]
     fn test_get_types_from_auxillary() {
         assert_eq!(
-            get_types(Function::Fe, Role::Auxillary),
+            get_types_from_function_role(Function::Fe, Role::Auxillary),
             hashset![Type::ISFJ, Type::INFJ]
         );
     }
@@ -632,7 +520,7 @@ mod tests {
     #[test]
     fn test_get_types_from_tertiary() {
         assert_eq!(
-            get_types(Function::Fe, Role::Tertiary),
+            get_types_from_function_role(Function::Fe, Role::Tertiary),
             hashset![Type::ESTP, Type::ENTP]
         );
     }
@@ -640,7 +528,7 @@ mod tests {
     #[test]
     fn test_get_types_from_inferior() {
         assert_eq!(
-            get_types(Function::Fe, Role::Inferior),
+            get_types_from_function_role(Function::Fe, Role::Inferior),
             hashset![Type::ISTP, Type::INTP]
         );
     }
@@ -648,7 +536,7 @@ mod tests {
     #[test]
     fn test_get_type_from_functions_correct() {
         assert_eq!(
-            get_type((Function::Ti, Function::Ne, Function::Si, Function::Fe)),
+            get_type_from_functions(&[Function::Ti, Function::Ne, Function::Si, Function::Fe]),
             Some(Type::INTP)
         );
     }
@@ -657,17 +545,24 @@ mod tests {
     #[should_panic]
     fn test_get_type_from_functions_wrong() {
         assert_eq!(
-            get_type((Function::Fe, Function::Si, Function::Ne, Function::Ti)),
+            get_type_from_functions(&[Function::Fe, Function::Si, Function::Ne, Function::Ti]),
             Some(Type::INTP)
         );
     }
 
     #[test]
-    #[should_panic]
     fn test_get_type_from_functions_not_found() {
         assert_eq!(
-            get_type((Function::Fe, Function::Fi, Function::Te, Function::Ti)),
-            Some(Type::INTP)
+            get_type_from_functions(&[Function::Fe, Function::Fi, Function::Te, Function::Ti]),
+            None
+        );
+    }
+
+    #[test]
+    fn test_get_type_from_functions_incorrect_number() {
+        assert_eq!(
+            get_type_from_functions(&[Function::Fe, Function::Fi, Function::Te]),
+            None
         );
     }
 
