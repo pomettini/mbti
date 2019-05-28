@@ -2,6 +2,9 @@
 name = "mbti"
 version = "0.1.0"
 authors = ["Giorgio Pomettini <giorgio.pomettini@gmail.com>"]
-edition = "2018"
 
 [dependencies]
+tuple = ">=0.4.2"
+strum = ">=0.15.0"
+strum_macros = ">=0.15.0"
+maplit = ">=1.0.1"
