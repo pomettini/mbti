@@ -9,65 +9,353 @@ use std::collections::HashSet;
 use strum::IntoEnumIterator;
 use tuple::*;
 
-#[allow(dead_code)]
-static COMPATIBILITY_CHART: [[usize; 16]; 16] = [
-    [4, 4, 4, 5, 4, 5, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1],
-    [4, 4, 5, 4, 5, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1],
-    [4, 5, 4, 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 1, 1],
-    [5, 4, 4, 4, 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 1],
-    [4, 5, 4, 4, 4, 4, 4, 5, 3, 3, 3, 3, 2, 2, 2, 2],
-    [5, 4, 4, 4, 4, 4, 5, 4, 3, 3, 3, 3, 3, 3, 3, 3],
-    [4, 4, 4, 4, 4, 5, 4, 4, 3, 3, 3, 3, 2, 2, 2, 5],
-    [4, 4, 5, 4, 5, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2],
-    [1, 1, 1, 5, 3, 3, 3, 3, 2, 2, 2, 2, 3, 5, 3, 5],
-    [1, 1, 1, 1, 3, 3, 3, 3, 2, 2, 2, 2, 5, 3, 5, 3],
-    [1, 1, 1, 1, 3, 3, 3, 3, 2, 2, 2, 2, 3, 5, 3, 5],
-    [1, 1, 1, 1, 3, 3, 3, 3, 2, 2, 2, 2, 5, 3, 5, 3],
-    [1, 1, 1, 1, 2, 3, 2, 2, 3, 5, 3, 5, 4, 4, 4, 4],
-    [1, 1, 1, 1, 2, 3, 2, 2, 5, 3, 5, 3, 4, 4, 4, 4],
-    [1, 1, 1, 1, 2, 3, 2, 2, 3, 5, 3, 5, 4, 4, 4, 4],
-    [1, 1, 1, 1, 2, 3, 5, 2, 5, 3, 5, 3, 4, 4, 4, 4],
+static COMPATIBILITY_CHART: [[Compatibility; 16]; 16] = [
+    // INFP
+    [
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+    ],
+    // ENFP
+    [
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+    ],
+    // INFJ
+    [
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+    ],
+    // ENFJ
+    [
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+    ],
+    // INTJ
+    [
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+    ],
+    // ENTJ
+    [
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+    ],
+    // INTP
+    [
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::VeryPositive,
+    ],
+    // ENTP
+    [
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+    ],
+    // ISFP
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+    ],
+    // ESFP
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+    ],
+    // ISTP
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+    ],
+    // ESTP
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+    ],
+    // ISFJ
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+    ],
+    // ESFJ
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+    ],
+    // ISTJ
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::Negative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+    ],
+    // ESTJ
+    [
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::VeryNegative,
+        Compatibility::Negative,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Negative,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::VeryPositive,
+        Compatibility::Neutral,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+        Compatibility::Positive,
+    ],
 ];
 
-static COMPATIBILITY_INDEX: [Type; 16] = [
-    Type::INFP,
-    Type::ENFP,
-    Type::INFJ,
-    Type::ENFJ,
-    Type::INTJ,
-    Type::ENTJ,
-    Type::INTP,
-    Type::ENTP,
-    Type::ISFP,
-    Type::ESFP,
-    Type::ISTP,
-    Type::ESTP,
-    Type::ISFJ,
-    Type::ESFJ,
-    Type::ISTJ,
-    Type::ESTJ,
+#[allow(dead_code)]
+static FUNCTIONS: [[Function; 4]; 16] = [
+    [Function::Fi, Function::Ne, Function::Si, Function::Te], // INFP
+    [Function::Ne, Function::Fi, Function::Te, Function::Si], // ENFP
+    [Function::Ni, Function::Fe, Function::Ti, Function::Se], // INFJ
+    [Function::Fe, Function::Ni, Function::Se, Function::Ti], // ENFJ
+    [Function::Ni, Function::Te, Function::Fi, Function::Se], // INTJ
+    [Function::Te, Function::Ni, Function::Se, Function::Fi], // ENTJ
+    [Function::Ti, Function::Ne, Function::Si, Function::Fe], // INTP
+    [Function::Ne, Function::Ti, Function::Fe, Function::Si], // ENTP
+    [Function::Fi, Function::Se, Function::Ni, Function::Te], // ISFP
+    [Function::Se, Function::Fi, Function::Te, Function::Ni], // ESFP
+    [Function::Ti, Function::Se, Function::Ni, Function::Fe], // ISTP
+    [Function::Se, Function::Ti, Function::Fe, Function::Ni], // ESTP
+    [Function::Si, Function::Fe, Function::Ti, Function::Ne], // ISFJ
+    [Function::Fe, Function::Si, Function::Ne, Function::Ti], // ESFJ
+    [Function::Si, Function::Te, Function::Fi, Function::Ne], // ISTJ
+    [Function::Te, Function::Si, Function::Ne, Function::Fi], // ESTJ
 ];
 
 type FunctionsGroup = (Function, Function, Function, Function);
 
 #[derive(EnumIter, Debug, PartialEq, PartialOrd, Copy, Clone, Hash, Eq)]
 pub enum Type {
-    ISTJ,
-    ISFJ,
-    INFJ,
-    INTJ,
-    ISTP,
-    ISFP,
     INFP,
-    INTP,
-    ESTP,
-    ESFP,
     ENFP,
-    ENTP,
-    ESTJ,
-    ESFJ,
+    INFJ,
     ENFJ,
+    INTJ,
     ENTJ,
+    INTP,
+    ENTP,
+    ISFP,
+    ESFP,
+    ISTP,
+    ESTP,
+    ISFJ,
+    ESFJ,
+    ISTJ,
+    ESTJ,
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
@@ -282,15 +570,7 @@ pub fn get_compatibile_types(type_: Type, compatibility: Compatibility) -> HashS
 }
 
 pub fn check_compatibility(first: Type, second: Type) -> Compatibility {
-    for compatibility in Compatibility::iter() {
-        let set = get_compatibile_types(first, compatibility);
-
-        if set.contains(&second) {
-            return compatibility;
-        }
-    }
-
-    Compatibility::Neutral
+    COMPATIBILITY_CHART[first as usize][second as usize]
 }
 
 #[cfg(test)]
@@ -428,7 +708,7 @@ mod tests {
     fn test_compatibility_positive() {
         assert_eq!(
             check_compatibility(Type::INTP, Type::INFP),
-            Compatibility::VeryPositive
+            Compatibility::Positive
         );
     }
 
@@ -436,7 +716,7 @@ mod tests {
     fn test_compatibility_neutral() {
         assert_eq!(
             check_compatibility(Type::INTP, Type::ISFP),
-            Compatibility::VeryPositive
+            Compatibility::Neutral
         );
     }
 
@@ -444,7 +724,7 @@ mod tests {
     fn test_compatibility_negative() {
         assert_eq!(
             check_compatibility(Type::INTP, Type::ISFJ),
-            Compatibility::VeryPositive
+            Compatibility::Negative
         );
     }
 
@@ -452,7 +732,7 @@ mod tests {
     fn test_compatibility_very_negative() {
         assert_eq!(
             check_compatibility(Type::ISFP, Type::INFP),
-            Compatibility::VeryPositive
+            Compatibility::VeryNegative
         );
     }
 }
