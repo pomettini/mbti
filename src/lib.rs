@@ -471,17 +471,17 @@ mod tests {
 
     #[test]
     fn test_get_auxilliary() {
-        assert_eq!(get_function(Type::INTP, Role::Auxillary), Function::Ne);
+        assert_eq!(get_function(Type::ENFP, Role::Auxillary), Function::Fi);
     }
 
     #[test]
     fn test_get_tertiary() {
-        assert_eq!(get_function(Type::INTP, Role::Tertiary), Function::Si);
+        assert_eq!(get_function(Type::INFJ, Role::Tertiary), Function::Ti);
     }
 
     #[test]
     fn test_get_inferior() {
-        assert_eq!(get_function(Type::INTP, Role::Inferior), Function::Fe);
+        assert_eq!(get_function(Type::ENFJ, Role::Inferior), Function::Ti);
     }
 
     #[test]
@@ -496,7 +496,7 @@ mod tests {
     #[should_panic]
     fn test_get_functions_wrong() {
         assert_eq!(
-            get_functions_from_type(Type::INTP),
+            get_functions_from_type(Type::ENTP),
             vec![Function::Fe, Function::Si, Function::Ne, Function::Ti]
         );
     }
