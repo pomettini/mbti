@@ -18,57 +18,77 @@ mbti = "0.1.0"
 
 Get a function from a MBTI type:
 
-```
+```rust
 extern crate mbti;
+
+use mbti::{get_function, Function, Role, Type};
 
 fn main() {
     let primary = get_function(Type::INTP, Role::Primary);
     assert_eq!(primary, Function::Ti);
 }
+
 ```
 
 Get all the functions from a MBTI type:
 
-```
+```rust
 extern crate mbti;
+
+use mbti::{get_functions_from_type, Function, Type};
 
 fn main() {
     let functions = get_functions_from_type(Type::INTP);
-    assert_eq!(functions, vec![Function::Ti, Function::Ne, Function::Si, Function::Fe]);
+    assert_eq!(
+        functions,
+        vec![Function::Ti, Function::Ne, Function::Si, Function::Fe]
+    );
 }
 ```
 
 Get all the MBTI types from a function role:
 
-```
+```rust
 extern crate mbti;
 
+use mbti::{get_types_from_function_role, Function, Role, Type};
+use std::collections::HashSet;
+#[macro_use]
+extern crate maplit;
+
 fn main() {
-    let types = get_types_from_function_role(Function::Fe, Role::Primary),
+    let types = get_types_from_function_role(Function::Fe, Role::Primary);
     assert_eq!(types, hashset![Type::ESFJ, Type::ENFJ]);
 }
+
 ```
 
 Get a MBTI types from a set of functions:
 
-```
+```rust
 extern crate mbti;
 
+use mbti::{get_type_from_functions, Function, Type};
+
 fn main() {
-    let functions = get_type_from_functions(&[Function::Fe, Function::Si, Function::Ne, Function::Ti]);
+    let functions =
+        get_type_from_functions(&[Function::Ti, Function::Ne, Function::Si, Function::Fe]);
     assert_eq!(functions, Some(Type::INTP));
 }
 ```
 
 Get compatibility between two MBTI types:
 
-```
+```rust
 extern crate mbti;
 
+use mbti::{check_compatibility, Compatibility, Type};
+
 fn main() {
-    let compatibility = check_compatibility(Type::INTP, Type::INFP)
+    let compatibility = check_compatibility(Type::INTP, Type::INFP);
     assert_eq!(compatibility, Compatibility::Positive);
 }
+
 ```
 
 ## License
