@@ -2,6 +2,11 @@
 name = "mbti"
 version = "0.1.0"
 authors = ["Giorgio Pomettini <giorgio.pomettini@gmail.com>"]
+edition = "2018"
+description = "A library to work with Myer-Briggs personality types"
+keywords = ["api", "psychology", "psicometrics"]
+categories = ["science"]
+license = "MIT"
 
 [dependencies]
 tuple = ">=0.4.2"
