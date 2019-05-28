@@ -57,8 +57,8 @@ pub fn get_functions(type_: Type) -> FunctionsGroup {
     (Function::Fe, Function::Fe, Function::Fe, Function::Fe)
 }
 
-pub fn get_type(group: FunctionsGroup) -> Result<Type, ()> {
-    Ok(Type::INTP)
+pub fn get_type(group: FunctionsGroup) -> Option<Type> {
+    Some(Type::INTP)
 }
 
 pub fn get_types(function: Function, role: Role) -> Vec<Type> {
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_functions_green() {
+    fn test_get_functions_correct() {
         assert_eq!(
             get_functions(Type::INTP),
             (Function::Ti, Function::Ne, Function::Si, Function::Fe)
@@ -102,10 +102,10 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn test_get_functions_red() {
+    fn test_get_functions_wrong() {
         assert_eq!(
             get_functions(Type::INTP),
-            (Function::Fe, Function::Ne, Function::Si, Function::Ti)
+            (Function::Fe, Function::Si, Function::Ne, Function::Ti)
         );
     }
 
@@ -138,6 +138,32 @@ mod tests {
         assert_eq!(
             get_types(Function::Fe, Role::Inferior),
             vec![Type::ISTP, Type::INTP]
+        );
+    }
+
+    #[test]
+    fn test_get_type_from_functions_correct() {
+        assert_eq!(
+            get_type((Function::Ti, Function::Ne, Function::Si, Function::Fe)),
+            Some(Type::INTP)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_type_from_functions_wrong() {
+        assert_eq!(
+            get_type((Function::Fe, Function::Si, Function::Ne, Function::Ti)),
+            Some(Type::INTP)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_type_from_functions_not_found() {
+        assert_eq!(
+            get_type((Function::Fe, Function::Fi, Function::Te, Function::Ti)),
+            Some(Type::INTP)
         );
     }
 
