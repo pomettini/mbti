@@ -7,6 +7,8 @@ description = "A library to work with Myer-Briggs personality types"
 keywords = ["api", "psychology", "psicometrics"]
 categories = ["science"]
 license = "MIT"
+repository = "https://github.com/Pomettini/mbti"
+readme = "readme.md"
 
 [dependencies]
 tuple = ">=0.4.2"
