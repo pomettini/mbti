@@ -1,13 +1,3 @@
-#![warn(
-    clippy::all,
-    // clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
-
-extern crate strum;
-extern crate tuple;
 #[macro_use]
 extern crate strum_macros;
 #[macro_use]
