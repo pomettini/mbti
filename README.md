@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`
 
 ```toml
 [dependencies]
-mbti = ">=0.1.2"
+mbti = ">=0.1.3"
 ```
 
 ## Examples

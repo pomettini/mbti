@@ -374,6 +374,15 @@ impl Type {
             _ => None,
         }
     }
+
+    // TODO: Add tests
+    fn get_function(self, role: Role) -> Function {
+        get_function(self, role)
+    }
+
+    fn get_functions(self) -> Vec<Function> {
+        get_functions_from_type(self)
+    }
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
@@ -386,6 +395,13 @@ pub enum Function {
     Si,
     Ne,
     Ni,
+}
+
+impl Function {
+    // TODO: Add tests
+    fn get_types_from_role(self, role: Role) -> HashSet<Type> {
+        get_types_from_function_role(self, role)
+    }
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
@@ -493,6 +509,23 @@ mod tests {
     fn test_get_functions_wrong() {
         assert_eq!(
             get_functions_from_type(Type::ENTP),
+            vec![Function::Fe, Function::Si, Function::Ne, Function::Ti]
+        );
+    }
+
+    #[test]
+    fn test_get_functions_idiomatic_correct() {
+        assert_eq!(
+            Type::get_functions(Type::INTP),
+            vec![Function::Ti, Function::Ne, Function::Si, Function::Fe]
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_functions_idiomatic_wrong() {
+        assert_eq!(
+            Type::get_functions(Type::ENTP),
             vec![Function::Fe, Function::Si, Function::Ne, Function::Ti]
         );
     }
