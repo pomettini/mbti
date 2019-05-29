@@ -375,7 +375,6 @@ impl Type {
         }
     }
 
-    // TODO: Add tests
     fn get_function(self, role: Role) -> Function {
         get_function(self, role)
     }
@@ -398,8 +397,7 @@ pub enum Function {
 }
 
 impl Function {
-    // TODO: Add tests
-    fn get_types_from_role(self, role: Role) -> HashSet<Type> {
+    fn get_types(self, role: Role) -> HashSet<Type> {
         get_types_from_function_role(self, role)
     }
 }
@@ -410,6 +408,16 @@ pub enum Role {
     Auxillary = 1,
     Tertiary = 2,
     Inferior = 3,
+}
+
+impl Role {
+    pub fn get_function(self, type_: Type) -> Function {
+        get_function(type_, self)
+    }
+
+    pub fn get_types(self, function: Function) -> HashSet<Type> {
+        get_types_from_function_role(function, self)
+    }
 }
 
 #[derive(EnumIter, Debug, PartialEq, PartialOrd, Copy, Clone)]
@@ -497,6 +505,16 @@ mod tests {
     }
 
     #[test]
+    fn test_get_primary_idiomatic_type() {
+        assert_eq!(Type::get_function(Type::INTP, Role::Primary), Function::Ti);
+    }
+
+    #[test]
+    fn test_get_primary_idiomatic_role() {
+        assert_eq!(Role::get_function(Role::Primary, Type::INTP), Function::Ti);
+    }
+
+    #[test]
     fn test_get_functions_correct() {
         assert_eq!(
             get_functions_from_type(Type::INTP),
@@ -559,6 +577,22 @@ mod tests {
         assert_eq!(
             get_types_from_function_role(Function::Fe, Role::Inferior),
             hashset![Type::ISTP, Type::INTP]
+        );
+    }
+
+    #[test]
+    fn test_get_types_from_primary_idiomatic_function() {
+        assert_eq!(
+            Function::get_types(Function::Fe, Role::Primary),
+            hashset![Type::ESFJ, Type::ENFJ]
+        );
+    }
+
+    #[test]
+    fn test_get_types_from_primary_idiomatic_role() {
+        assert_eq!(
+            Role::get_types(Role::Primary, Function::Fe),
+            hashset![Type::ESFJ, Type::ENFJ]
         );
     }
 
