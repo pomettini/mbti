@@ -693,4 +693,20 @@ mod tests {
             Compatibility::VeryNegative
         );
     }
+
+    #[test]
+    fn test_get_type_at_index_correct() {
+        assert_eq!(Type::at_index(1), Some(Type::ENFP));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_type_at_index_wrong() {
+        assert_eq!(Type::at_index(2), Some(Type::INFP));
+    }
+
+    #[test]
+    fn test_get_type_at_index_overflow() {
+        assert_eq!(Type::at_index(16), None);
+    }
 }

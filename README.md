@@ -7,6 +7,15 @@ A library to work with Myer-Briggs personality types
 [![Coverage Status](https://coveralls.io/repos/github/Pomettini/mbti/badge.svg?branch=master)](https://coveralls.io/github/Pomettini/mbti?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+Myers-Briggs theory is an adaptation of the theory of psychological types produced by Carl Gustav Jung. It is based on 16 personality types, which Jung viewed as stereotypes. They act as useful reference points to understand your unique personality. At the heart of Myers Briggs theory are four preferences. Do you prefer to deal with:
+
+* People and things (*Extraversion* or **E**), or ideas and information (*Introversion* or **I**).
+* Facts and reality (*Sensing* or **S**), or possibilities and potential (*Intuition* or **N**).
+* Logic and truth (*Thinking* or **T**), or values and relationships (*Feeling* or **F**).
+* A lifestyle that is well-structured (*Judgment* or **J**), or one that goes with the flow (*Perception* or **P**).
+
+[Credits: Team Technology](https://www.teamtechnology.co.uk/tt/t-articl/mb-simpl.htm)
+
 ## Usage
 
 Add this to your `Cargo.toml`
